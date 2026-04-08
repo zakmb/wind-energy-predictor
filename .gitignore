@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+
+# Data and generated artifacts
+Data/
+Logs/
+*.csv
+*.tsv
+*.parquet
+*.jsonl
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.joblib
+*.keras
+*.h5
+*.pt
+*.pth
+*.pkl
