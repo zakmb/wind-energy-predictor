@@ -1,26 +1,22 @@
 import pandas as pd
 import numpy as np
 
-# --- Configuration ---
 # Doing 900 for SMOTE, 6000 for GAN to make file sizes small enough
 MAX_TOTAL_EVENTS = 900
 # MAX_TOTAL_EVENTS = 6000
 
 
-# --- Input Paths ---
 orig_path = "../Data/Processed/train_original.csv"
 aug_path = "../Data/SMOTE/Combined/combined_smote.csv"
 scaling_path = "../Data/Processed/scaling_params.csv"
 test_path = "../Data/Processed/test.csv"
 
-# --- Output Paths: Combined Data ---
 output_data_path = "../Data/RF Model Data Files/Train/original_and_smote_data.csv"
 output_scaling_path = (
     "../Data/RF Model Data Files/Train/original_and_smote_scaling_params.csv"
 )
 output_test_path = "../Data/RF Model Data Files/Test/original_and_smote_test_data.csv"
 
-# --- Output Paths: SMOTE-Only Data ---
 output_aug_renormalised_path = "../Data/RF Model Data Files/Train/smote_data.csv"
 output_aug_scaling_path = "../Data/RF Model Data Files/Train/smote_scaling_params.csv"
 output_aug_test_path = "../Data/RF Model Data Files/Test/smote_test_data.csv"
@@ -61,7 +57,6 @@ def normalise_df(df, params, features):
             if diff == 0:
                 df_new[col] = 0
             else:
-                # Clips to strictly enforce the [0, 1] range
                 df_new[col] = ((df[col] - min_val) / diff).clip(0, 1)
     return df_new
 
@@ -78,26 +73,22 @@ def get_event_list(df, label_col, id_col):
 def main():
     rng = np.random.RandomState(42)
 
-    # 1. Load Data
     train_original = pd.read_csv(orig_path).drop(columns=["StartTime"], errors="ignore")
     train_augmented = pd.read_csv(aug_path).drop(columns=["StartTime"], errors="ignore")
     test_data = pd.read_csv(test_path).drop(columns=["StartTime"], errors="ignore")
     scaling_params = pd.read_csv(scaling_path, index_col=0)
 
-    # 2. Unscale all data
     train_orig_unscaled = unnormalise_df(train_original, scaling_params, features)
     train_aug_unscaled = unnormalise_df(train_augmented, scaling_params, features)
     test_unscaled = unnormalise_df(test_data, scaling_params, features)
 
-    # 3. Calculate Capped Target Size
     orig_events = get_event_list(train_orig_unscaled, "_EventLabel", "_EventID")
     aug_events = get_event_list(train_aug_unscaled, "_EventLabel", "_EventID")
 
     labels = ["Normal", "Lull", "Ramp", "CutOut"]
-    max_per_class = MAX_TOTAL_EVENTS // len(labels)  # 1500 per class
+    max_per_class = MAX_TOTAL_EVENTS // len(labels) 
 
     orig_counts = {k: len(v) for k, v in orig_events.items()}
-    # Cap target size so we don't blow up the rows
     target_size = min(max(orig_counts.values()), max_per_class)
 
     final_events_list = []
@@ -149,7 +140,6 @@ def main():
     for label in labels:
         aug_list = aug_events.get(label, [])
         if len(aug_list) > target_size:
-            # Randomly sample down to the target size limit
             indices = rng.choice(len(aug_list), target_size, replace=False)
             aug_capped_list.extend([aug_list[i] for i in indices])
         else:

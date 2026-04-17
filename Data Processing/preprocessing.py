@@ -208,8 +208,6 @@ def process_data(df):
     )
     train_bal.to_csv(OUTPUT_TRAIN_BAL, index=False)
 
-    # Intentionally silent: outputs are written to CSV files.
-
 
 def get_last_n_ids(df, label, n):
     ids = df[df["_EventLabel"] == label]["_EventID"].unique()

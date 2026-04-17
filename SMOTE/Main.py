@@ -33,7 +33,6 @@ FEATURES = [
     "ActivePower",
 ]
 
-# Configuration Constants
 N_SAMPLES = 4000
 NEIGHBORS = 3
 METHODS_TO_RUN = ["interval", "extrapolate", "physics", "combined"]
@@ -47,7 +46,6 @@ def main():
         out_dir = os.path.join(OUT_BASE, method.capitalize())
         out_file = os.path.join(out_dir, f"{method}_smote.csv")
 
-        # instantiate the model
         if method == "interval":
             smote = IntervalSMOTE(N_SAMPLES, NEIGHBORS, FEATURES)
         elif method == "extrapolate":
@@ -56,11 +54,9 @@ def main():
             smote = PhysicsAwareSMOTE(N_SAMPLES, NEIGHBORS, FEATURES)
         else:
             smote = CombinedSMOTE(N_SAMPLES, NEIGHBORS, FEATURES)
-
-        # generate
+    
         df_syn = smote.generate(df_real, "_EventLabel")
 
-        # validate + save
         plot_validation(df_real, df_syn, method, out_dir)
         normalise_and_save(df_syn, scales, out_file)
 

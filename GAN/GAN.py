@@ -17,7 +17,7 @@ def set_determinism(seed=42):
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)  # For multi-GPU
+    torch.cuda.manual_seed_all(seed)  
 
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
@@ -25,7 +25,6 @@ def set_determinism(seed=42):
     torch.use_deterministic_algorithms(True, warn_only=True)
 
 
-# Initialize determinism immediately
 set_determinism(42)
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -62,7 +61,6 @@ TARGET_OUTPUT_COLS = [
     "ERA5_WH",
 ]
 
-# Physics Constants (Physical Units)
 RATED_POWER_KW = 7000.0
 CUT_IN_SPEED_MPS = 3.0
 RATED_SPEED_MPS = 12.5
@@ -219,7 +217,6 @@ def train_model():
         )
         total_d, total_g = 0, 0
 
-        # Initialize locally to track for print statements safely
         p_loss_val = 0.0
         div_loss_val = 0.0
 
@@ -268,8 +265,7 @@ def train_model():
 
             total_d += d_loss.item()
             total_g += g_loss.item()
-
-            # Extract items to avoid holding the entire computational graph in memory just for a print statement
+        
             p_loss_val = p_loss.item()
             div_loss_val = div_loss.item()
 

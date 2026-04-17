@@ -13,7 +13,6 @@ HEIGHT_REF = 10.0
 HEIGHT_DIR_MAX = 100.0
 HEIGHT_HUB = 110.0
 
-# Input Directories
 TRAIN_DIR = "../Data/RF Model Data Files/Train"
 TEST_DIR = "../Data/RF Model Data Files/Test"
 

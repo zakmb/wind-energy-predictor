@@ -1,7 +1,6 @@
 __pycache__/
 *.py[cod]
 
-# Data and generated artifacts
 Data/
 Logs/
 *.csv

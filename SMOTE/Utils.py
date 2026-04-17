@@ -28,25 +28,20 @@ def relabel_events(df):
 
     df_relabelled = df.copy()
 
-    # 1. Default all to Normal
     df_relabelled["_EventLabel"] = "Normal"
 
-    # 2. Lull: wind speed < LULL_SPEED for 60+ consecutive data points (10 hours)
     is_low_wind = df_relabelled["WindSpeed_Hub"] < LULL_SPEED
     group_ids = (is_low_wind != is_low_wind.shift()).cumsum()
     group_sizes = is_low_wind.groupby(group_ids).transform("size")
     df_relabelled.loc[is_low_wind & (group_sizes >= 60), "_EventLabel"] = "Lull"
 
-    # 3. Ramp: Power output changes by RAMP_THRESHOLD_KW+ in one time step (Absolute difference)
     power_diff = df_relabelled["ActivePower"].diff().fillna(0).abs()
     df_relabelled.loc[power_diff > RAMP_THRESHOLD_KW, "_EventLabel"] = "Ramp"
 
-    # 4. CutOut: wind speed > CUT_OUT_WIND
     df_relabelled.loc[df_relabelled["WindSpeed_Hub"] > CUT_OUT_WIND, "_EventLabel"] = (
         "CutOut"
     )
 
-    # 5. BigCutOut: wind speed > BIG_CUT_OUT_WIND
     df_relabelled.loc[
         df_relabelled["WindSpeed_Hub"] > BIG_CUT_OUT_WIND, "_EventLabel"
     ] = "BigCutOut"
@@ -62,7 +57,6 @@ def identify_event_groups(df, target_col="_EventLabel"):
 
 
 def normalise_and_save(df_real, scales, output_path, apply_relabeling=False):
-    # Apply relabeling and re-grouping if requested
     if apply_relabeling:
         df_real = relabel_events(df_real)
         df_real = identify_event_groups(df_real)
@@ -82,7 +76,6 @@ def normalise_and_save(df_real, scales, output_path, apply_relabeling=False):
 def plot_validation(df_real, df_syn, method_name, save_dir):
     os.makedirs(save_dir, exist_ok=True)
 
-    # 1. Physics Check (Scatter)
     plt.figure(figsize=(10, 6))
     plt.scatter(
         df_real["WindSpeed_Hub"],
@@ -109,7 +102,6 @@ def plot_validation(df_real, df_syn, method_name, save_dir):
     plt.savefig(os.path.join(save_dir, "validation_scatter.png"))
     plt.close()
 
-    # 2. Time Series Check (First 3 events)
     syn_ids = df_syn["EventID"].unique()[:3]
     for i, eid in enumerate(syn_ids):
         subset = df_syn[df_syn["EventID"] == eid]

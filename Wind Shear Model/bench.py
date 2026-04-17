@@ -140,7 +140,6 @@ def run_colab_benchmark():
     rf_pipeline = joblib.load(RF_MODEL_PATH)
     pinn_model = tf.keras.models.load_model(PINN_MODEL_PATH, compile=False)
 
-    # --- A. BENCHMARK RANDOM FOREST ---
     _, _, _ = rf_pipeline.predict(test_df.head(10), scalers, target_height_m=HEIGHT_HUB)
 
     start_time = time.perf_counter()
@@ -149,7 +148,6 @@ def run_colab_benchmark():
     )
     rf_time_ms = (time.perf_counter() - start_time) * 1000
 
-    # --- PREPARE DATA FOR PINN ---
     test_df_pinn = test_df.copy()
     ws_min = v_pred_110.min()
     ws_max = v_pred_110.max()
@@ -159,7 +157,6 @@ def run_colab_benchmark():
 
     X_test_pinn = create_inference_sequences(test_df_pinn, WINDOW_SIZE)
 
-    # --- B. BENCHMARK PINN ---
     _ = pinn_model.predict(X_test_pinn[:10], verbose=0)
 
     start_time = time.perf_counter()
@@ -170,5 +167,4 @@ def run_colab_benchmark():
     print(f"(Processed {len(test_df)} rows / {len(X_test_pinn)} sequences)")
 
 
-# Run the script
 run_colab_benchmark()
