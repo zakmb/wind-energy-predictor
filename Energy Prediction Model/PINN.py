@@ -279,8 +279,8 @@ class AdaptivePINN(tf.keras.Model):
         L_cutout = tf.reduce_mean(tf.cast(v > 25.0, tf.float32) * tf.nn.relu(P))
         L_powerlimits = tf.reduce_mean(tf.nn.relu(-150.0 - P) + tf.nn.relu(P - 7000.0))
 
-        mask_betz = tf.cast((v >= 3.0) & (v <= 12.5), tf.float32)
-        P_theo = 7000.0 * tf.pow(v / 12.5, 3.0)
+        mask_betz = tf.cast((v >= 3.0) & (v <= 11.5), tf.float32)
+        P_theo = 7000.0 * tf.pow(v / 11.5, 3.0)
         L_betz = tf.reduce_mean(mask_betz * steady_state_mask * tf.nn.relu(P - P_theo))
 
         return (L_cutin + L_cutout + L_powerlimits + L_betz) / (self.p_max - self.p_min)
