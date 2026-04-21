@@ -205,7 +205,7 @@ class PhysicsAwareSMOTE(ExtrapolatingSMOTE):
         rated_power: float = 7000.0,
         cut_in: float = 3.0,
         cut_out: float = 25.0,
-        rated_speed: float = 12.0,
+        rated_speed: float = 11.5,
         random_state: int = 42,
     ):
         super().__init__(
